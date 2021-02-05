@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Contract } from 'ethers';
 
 // common
@@ -8,8 +9,6 @@ import VaultAbi from 'contracts/Vault.sol/Vault.json';
 
 type Values = {
   vault: Contract | undefined;
-  delegate: (address: string) => Promise<void>;
-  vote: (proposalId: number, support: boolean) => Promise<void>;
 };
 
 type Props = {
@@ -17,20 +16,19 @@ type Props = {
 };
 
 export const useVault = ({ vaultAddress }: Props): Values => {
+  const [contractInstance, setcontractInstance] = useState<Contract | undefined>(undefined);
+
   // custom hooks
   const { signer } = useWeb3();
 
-  // constant
-  const vault = new Contract(vaultAddress, VaultAbi.abi, signer);
+  useEffect(() => {
+    if(!vaultAddress) return;
+    const vault = new Contract(vaultAddress, VaultAbi.abi, signer);
 
-  // methods
-  const delegate = async (address: string): Promise<void> => {
-    await vault?.delegate(address);
-  };
+    setcontractInstance(vault);
+  }, [vaultAddress])
+  
 
-  const vote = async (proposalId: number, support: boolean): Promise<void> => {
-    await vault?.vote(proposalId, support);
-  };
 
-  return { vault, delegate, vote };
+  return { vault: contractInstance };
 };

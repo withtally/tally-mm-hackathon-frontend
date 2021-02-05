@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { RouteComponentProps } from '@reach/router';
 import {
   Heading,
@@ -13,41 +13,81 @@ import {
   RadioGroup,
   Radio,
 } from '@chakra-ui/react';
+import { useParams } from '@reach/router';
 
 import { useCloseVault } from 'vault/hooks/useCloseVault';
+import { useVaultInfo } from 'vault/hooks/useVaultInfo';
+import { useDelegateVote } from 'vault/hooks/useDelegateVotes';
+import { useWeb3 } from 'common/hooks/useWeb3';
 
 const Vault: FC<RouteComponentProps> = () => {
+  // react hooks
+  const [vaultBalance, setVaultBalance] = useState<number>(0);
+  const [vaultAddress, setVaultAddress] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
 
-// custom hooks
-const { closeOwnVault } = useCloseVault();
+  // router hooks
+  const { vaultId } = useParams();
 
-const handleCloseVault = async (vaultId: number) => {
+  // custom hooks
+  const { getVaultInfo } = useVaultInfo();
+  const { signerAddress } = useWeb3();
+  const { delegate } = useDelegateVote({vaultAddress});
+  
+
+  // effects
+  useEffect(() => {
+    if (!vaultId) return;
+
+    const asyncVaultInfo = async () => {
+      const result = await getVaultInfo(vaultId);
+      setVaultBalance(result.vaultBalance);
+      setVaultAddress(result.vaultAddress);
+      
+    };
+
+    asyncVaultInfo();
+    console.log('Hook called?');
+  }, [vaultId]);
+
+  // custom hooks
+  const { closeOwnVault } = useCloseVault();
+
+  // handlers
+  const handleCloseVault = async () => {
     await closeOwnVault(vaultId);
-}
+  };
 
-  return (
+
+  const handleDelegateVotes = async () => {
+    await delegate(address);
+  }
+
+  return !signerAddress ? (
+    <Text>Loading...</Text>
+  ) : (
     <VStack align="flex-start" justify="flex-start" spacing="30px" w="full">
       <Heading justifySelf="flex-start" as="h3" size="lg">
-        Vault No. 1
+        Vault No. {vaultId}
       </Heading>
       <Flex mb={2} w="full">
         <Text mr={1}>Balance</Text>
-        <Text>200 COMP</Text>
+        <Text>{vaultBalance} MT</Text>
       </Flex>
-      <HStack mb={2} w="full">
+      <HStack hidden mb={2} w="full">
         <Text mr={1}>Underlying governance</Text>
         <Text mr={1}>Compound</Text>
       </HStack>
       <Flex mb={4} w="full">
         <FormControl id="address" w="300px" mr={4}>
           <FormLabel>Address</FormLabel>
-          <Input type="address" />
+          <Input type="address" onChange={(event) => setAddress(event.target.value)} />
         </FormControl>
-        <Button colorScheme="teal" mt="30px">
+        <Button colorScheme="teal" mt="30px" onClick={handleDelegateVotes}>
           Delegate
         </Button>
       </Flex>
-      <VStack align="flex-start" justify="flex-start">
+      <VStack hidden align="flex-start" justify="flex-start">
         <Flex mb={4}>
           <Text mr={1}>Current Proposal:</Text>
           <Text mr={1}>A proposal made for Compound</Text>
@@ -64,7 +104,7 @@ const handleCloseVault = async (vaultId: number) => {
             </VStack>
           </RadioGroup>
 
-          <Button colorScheme="teal" mt="30px" onClick={() => handleCloseVault(1)}>
+          <Button colorScheme="teal" mt="30px" onClick={handleCloseVault}>
             Vote
           </Button>
         </Flex>

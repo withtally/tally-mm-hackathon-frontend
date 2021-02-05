@@ -1,6 +1,9 @@
 import React, { FC } from 'react';
-import { Flex, FlexProps, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, TableCaption } from '@chakra-ui/react';
+import { Flex, FlexProps, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, TableCaption, Link } from '@chakra-ui/react';
 import { Vault } from 'common/lib/types';
+import { Link as ReachLink } from '@reach/router';
+
+import {ROUTES} from 'common/lib/routes';
 
 type Props = {
   ownedVaults: Vault[];
@@ -20,7 +23,15 @@ const VaultTable: FC<Props & FlexProps> = ({ownedVaults}) => (
       <Tbody>
         {ownedVaults.map(item => (
           <Tr>
-            <Td>{item.vaultAddress}</Td>
+            <Td>
+              <Link
+                // @ts-ignore
+                as={ReachLink}
+                to={ROUTES.vault(item.vaultId.toString())}
+              >
+                {item.vaultAddress}
+              </Link>  
+            </Td>
             <Td>{item.vaultBalance}</Td>
             <Td>{item.vaultId}</Td>
             <Td><Badge colorScheme="green">Active</Badge></Td>

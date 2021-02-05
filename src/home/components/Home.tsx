@@ -43,6 +43,7 @@ const Home: FC<RouteComponentProps> = () => {
 
   const { getVaultsOfAddress } = useListOwnedVaults();
 
+  // async effect funcs 
   const asyncBalance = async () => {
     let balance = await tokenContract?.balanceOf(signerAddress);
     let ownedVaults = await getVaultsOfAddress(signerAddress);
@@ -51,6 +52,7 @@ const Home: FC<RouteComponentProps> = () => {
     setOwnedVaults(ownedVaults);
   };
 
+  // handlers
   const handleDepositClick = async () => {
     try {
       if (Number(amount) > Number(tokenBalance)) {
@@ -62,8 +64,6 @@ const Home: FC<RouteComponentProps> = () => {
       }
 
       await createVault(amount);
-      let ownedVaults = await getVaultsOfAddress(signerAddress);
-      setOwnedVaults(ownedVaults);
 
     } catch (e) {
       toast({
@@ -74,7 +74,8 @@ const Home: FC<RouteComponentProps> = () => {
       console.log('Error', e);
     }
   };
-
+  
+  // effects
   useEffect(() => {
     signerAddress &&
       vaultFactory?.on(

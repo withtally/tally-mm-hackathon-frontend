@@ -10,7 +10,7 @@ const Container: FC<RouteComponentProps & FlexProps> = ({ ...flexProps }) => {
     <Flex as="main" flex={1} minHeight="calc(100vh - 8em)" w="full" bg='white'>
       <Flex direction="column" mt={16} justify='flex-start' maxW="64rem" mx="auto" w="full" {...flexProps}>
         <Router basepath="/">
-          <Vault path="/vault/:proposalId" />
+          <Vault path="/vault/:vaultId" />
           <Home path="/" />
         </Router>
       </Flex>

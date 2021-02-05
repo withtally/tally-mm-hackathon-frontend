@@ -23,4 +23,5 @@ export type Vault = {
   vaultId: number;
   vaultAddress: string;
   vaultBalance: number;
+  ownerAddress?: string;
 }
