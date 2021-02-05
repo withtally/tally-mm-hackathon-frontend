@@ -6,12 +6,12 @@ export const GOVERNANCE_MODULES: Governances = {
   mockToken: {
     path: 'mockToken',
     contract: {
-      address: '0x86671329F3c3b10eC30983ED7435aBc1da853339',
+      address: '0xa47046651AeD22232D7342180f07b0e022c8ec43',
       abi: MockGovernorAlpha.abi,
     },
     token: {
       name: 'MT',
-      contractAddress: '0x9B6c0C52A0B5259398D21BC334Ef1aA3Df0A6450',
+      contractAddress: '0x375Bda29fc72E9F5423Ac3e756f957C03555604e',
       abi: MockToken.abi,
     },
   },
@@ -49,5 +49,5 @@ export const GOVERNANCES_OPTIONS = Object.entries(GOVERNANCE_MODULES)
   );
 
   export const VaultFactory = {
-    address: '0xDeb2677aE8C29038F128fB911da33970265675D4'
+    address: '0xb4d0c77Fa44FDDb7821aeF5BEEbc7521d54dd9b9'
   }

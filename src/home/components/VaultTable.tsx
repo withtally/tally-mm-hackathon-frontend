@@ -1,10 +1,14 @@
 import React, { FC } from 'react';
-import { Flex, FlexProps, Text, Table, Thead, Tbody, Tr, Th, Td, Badge } from '@chakra-ui/react';
+import { Flex, FlexProps, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, TableCaption } from '@chakra-ui/react';
+import { Vault } from 'common/lib/types';
 
-type Props = {};
+type Props = {
+  ownedVaults: Vault[];
+};
 
-const VaultTable: FC<Props & FlexProps> = () => (
+const VaultTable: FC<Props & FlexProps> = ({ownedVaults}) => (
     <Table variant="simple">
+      {ownedVaults.length <= 0 ? (<TableCaption>Still no owned vaults</TableCaption>) : (<TableCaption></TableCaption>)}
       <Thead>
         <Tr>
           <Th>Address</Th>
@@ -14,24 +18,14 @@ const VaultTable: FC<Props & FlexProps> = () => (
         </Tr>
       </Thead>
       <Tbody>
-        <Tr>
-          <Td>0x0</Td>
-          <Td>25.4</Td>
-          <Td>1</Td>
-          <Td><Badge colorScheme="green">Active</Badge></Td>
-        </Tr>
-        <Tr>
-          <Td>0x0</Td>
-          <Td>30.48</Td>
-          <Td>2</Td>
-          <Td><Badge>Inactive</Badge></Td>
-        </Tr>
-        <Tr>
-          <Td>0x0</Td>
-          <Td>0.91444</Td>
-          <Td>3</Td>
-          <Td><Badge colorScheme="red">Expired</Badge></Td>
-        </Tr>
+        {ownedVaults.map(item => (
+          <Tr>
+            <Td>{item.vaultAddress}</Td>
+            <Td>{item.vaultBalance}</Td>
+            <Td>{item.vaultId}</Td>
+            <Td><Badge colorScheme="green">Active</Badge></Td>
+          </Tr>
+        ))}
       </Tbody>
     </Table>
 );

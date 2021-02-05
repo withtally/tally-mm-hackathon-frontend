@@ -19,11 +19,15 @@ import { useToken } from 'home/hooks/useToken';
 
 import { parseBigNumber } from 'common/lib/helpers';
 import { useCreateVault } from 'home/hooks/useCreateVault';
+import { useVaultFactory } from 'common/hooks/useVaultFactory';
+import {useListOwnedVaults} from 'home/hooks/useListOwnedVaults';
+import {Vault} from 'common/lib/types';
 
 const Home: FC<RouteComponentProps> = () => {
   // react hooks
   const [tokenBalance, setTokenBalance] = useState('0');
   const [amount, setAmount] = useState('0');
+  const [ownedVaults, setOwnedVaults] = useState<Vault[]>([]);
 
   // chakra hooks
   const toast = useToast();
@@ -31,14 +35,20 @@ const Home: FC<RouteComponentProps> = () => {
   // custom hooks
   const { signerAddress } = useWeb3();
 
-  const { tokenContract, approveSpending, } = useToken();
+  const { tokenContract, approveSpending } = useToken();
 
   const { createVault } = useCreateVault();
 
+  const { vaultFactory } = useVaultFactory();
+
+  const { getVaultsOfAddress } = useListOwnedVaults();
+
   const asyncBalance = async () => {
     let balance = await tokenContract?.balanceOf(signerAddress);
+    let ownedVaults = await getVaultsOfAddress(signerAddress);
 
     setTokenBalance(parseBigNumber(balance).toString());
+    setOwnedVaults(ownedVaults);
   };
 
   const handleDepositClick = async () => {
@@ -51,8 +61,9 @@ const Home: FC<RouteComponentProps> = () => {
         });
       }
 
-
       await createVault(amount);
+      let ownedVaults = await getVaultsOfAddress(signerAddress);
+      setOwnedVaults(ownedVaults);
 
     } catch (e) {
       toast({
@@ -64,6 +75,15 @@ const Home: FC<RouteComponentProps> = () => {
     }
   };
 
+  useEffect(() => {
+    signerAddress &&
+      vaultFactory?.on(
+        'VaultCreated',
+        (creator: string, amount: number, vaultId: number, vaultAddress: string) => {
+          console.log('vault created', { creator, amount, vaultId, vaultAddress });
+        },
+      );
+  });
 
   useEffect(() => {
     if (!signerAddress) return;
@@ -106,7 +126,7 @@ const Home: FC<RouteComponentProps> = () => {
               Owned Vaults
             </Text>
             <Box borderWidth="1px" borderRadius="lg" w="full">
-              <VaultTable />
+              <VaultTable ownedVaults={ownedVaults} />
             </Box>
           </VStack>
         </>
