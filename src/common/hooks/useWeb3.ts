@@ -99,6 +99,7 @@ const useWeb3Constate = (): Values => {
 
             const signerAddress = accounts[0];
 
+
             setSignerAddress(signerAddress);
         });
 

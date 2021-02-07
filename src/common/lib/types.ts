@@ -1,4 +1,4 @@
-export type GovernanceKey = 'mockToken' | 'compound' | 'uniswap';
+export type GovernanceKey = 'mockToken';
 export type GovernanceContract = {
   address: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,4 +24,5 @@ export type Vault = {
   vaultAddress: string;
   vaultBalance: number;
   ownerAddress?: string;
+  vaultEpochExpiry?: string;
 }

@@ -1,4 +1,4 @@
-import { Contract , utils} from 'ethers';
+import { Contract } from 'ethers';
 
 // governance
 import { VaultFactory, GOVERNANCE_MODULES } from 'common/lib/modules';
@@ -24,8 +24,6 @@ export const useVaultFactory = (): Values => {
 
   // constant
   const vaultFactory = new Contract(VaultFactory.address, VaultFactoryAbi.abi, signer);
-
-
 
   return {
     vaultFactory,

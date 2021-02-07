@@ -18,6 +18,7 @@ import { useParams } from '@reach/router';
 import { useCloseVault } from 'vault/hooks/useCloseVault';
 import { useVaultInfo } from 'vault/hooks/useVaultInfo';
 import { useDelegateVote } from 'vault/hooks/useDelegateVotes';
+import { useVault } from 'common/hooks/useVault';
 import { useWeb3 } from 'common/hooks/useWeb3';
 
 const Vault: FC<RouteComponentProps> = () => {
@@ -32,8 +33,8 @@ const Vault: FC<RouteComponentProps> = () => {
   // custom hooks
   const { getVaultInfo } = useVaultInfo();
   const { signerAddress } = useWeb3();
-  const { delegate } = useDelegateVote({vaultAddress});
-  
+  const { delegate } = useDelegateVote({ vaultAddress });
+  const { vault } = useVault({ vaultAddress });
 
   // effects
   useEffect(() => {
@@ -43,11 +44,9 @@ const Vault: FC<RouteComponentProps> = () => {
       const result = await getVaultInfo(vaultId);
       setVaultBalance(result.vaultBalance);
       setVaultAddress(result.vaultAddress);
-      
     };
 
     asyncVaultInfo();
-    console.log('Hook called?');
   }, [vaultId]);
 
   // custom hooks
@@ -58,10 +57,23 @@ const Vault: FC<RouteComponentProps> = () => {
     await closeOwnVault(vaultId);
   };
 
-
   const handleDelegateVotes = async () => {
     await delegate(address);
-  }
+  };
+
+  // effects
+  useEffect(() => {
+    signerAddress &&
+      vault?.on('Delegation', (delegator: string, delegatee: string) => {
+        console.log('Delegation made', { delegator, delegatee });
+      });
+
+    return function cleanup() {
+      vault?.off('VaultCreated', () => {
+        console.log('unsubscribed');
+      });
+    };
+  });
 
   return !signerAddress ? (
     <Text>Loading...</Text>

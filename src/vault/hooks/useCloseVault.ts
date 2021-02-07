@@ -13,6 +13,7 @@ export const useCloseVault = (): Values => {
 
   // methods
   const closeOwnVault = async (vaultId: number): Promise<void> => {
+    console.log('close own vault called', vaultId);
     await vaultFactory?.closeOwnVault(vaultId);
   };
 
